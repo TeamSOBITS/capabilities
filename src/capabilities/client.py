@@ -135,7 +135,7 @@ class CapabilitiesClient(object):
         :rtype: :py:obj:`bool`
         """
         services = self._services.keys() if services is None else services
-        assert isinstance(services, list), services
+        assert isinstance(services, list) or services
         for service in services:
             if service not in self._services:
                 raise ValueError(

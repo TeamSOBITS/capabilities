@@ -101,6 +101,7 @@ from __future__ import print_function
 import difflib
 import os
 import yaml
+from ansible.module_utils.six import iteritems
 
 
 class InvalidInterface(Exception):
@@ -122,7 +123,7 @@ def capability_interface_from_file_path(file_path):
     :raises: :py:exc:`OSError` if the given file does not exist
     """
     with open(os.path.abspath(file_path), 'r') as f:
-        return capability_interface_from_dict(yaml.load(f), file_path)
+        return capability_interface_from_dict(yaml.load(f, Loader=yaml.SafeLoader), file_path)
 
 
 def capability_interface_from_file(file_handle):
@@ -136,7 +137,7 @@ def capability_interface_from_file(file_handle):
     :rtype: :py:class:`CapabilityInterface`
     :raises: :py:exc:`OSError` if the given file does not exist
     """
-    return capability_interface_from_dict(yaml.load(file_handle.read()), file_handle.name)
+    return capability_interface_from_dict(yaml.load(file_handle.read(), Loader=yaml.SafeLoader), file_handle.name)
 
 
 def capability_interface_from_string(string, file_name='<string>'):
@@ -152,7 +153,7 @@ def capability_interface_from_string(string, file_name='<string>'):
     :rtype: :py:class:`CapabilityInterface`
     :raises: :py:exc:`AttributeError` if the given value for string is not a str
     """
-    return capability_interface_from_dict(yaml.load(string), file_name)
+    return capability_interface_from_dict(yaml.load(string, Loader=yaml.SafeLoader), file_name)
 
 
 def capability_interface_from_dict(spec, file_name='<dict>'):
@@ -226,7 +227,7 @@ def __process_interface_element(element_type, capability_interface, element_grou
     for group in element_groups:
         if group in ['requires', 'provides']:
             elements = element_groups[group] or {}
-            for name, element in elements.iteritems():
+            for name, element in iteritems(elements):
                 __add_element_to_interface(name, element, group)
         else:
             __add_element_to_interface(group, element_groups[group])

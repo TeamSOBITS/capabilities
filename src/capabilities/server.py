@@ -398,7 +398,7 @@ class CapabilityServer(object):
         package_index = package_index_from_package_path(self.__package_paths)
         self.spec_file_index = spec_file_index_from_package_index(package_index)
         # Prune packages by black and white list
-        for package in self.spec_file_index.keys():
+        for package in list(self.spec_file_index):
             if self.__package_whitelist and package not in self.__package_whitelist:
                 rospy.loginfo("Package '{0}' not in whitelist, skipping.".format(package))
                 del self.spec_file_index[package]
@@ -434,9 +434,9 @@ class CapabilityServer(object):
                     spec_index.remove_provider(provider.name)
         self.__spec_index = spec_index
         # Prune spec_file_index
-        spec_paths = spec_index.interface_paths.values() + \
-            spec_index.semantic_interface_paths.values() + \
-            spec_index.provider_paths.values()
+        spec_paths = list(spec_index.interface_paths.values()) + \
+            list(spec_index.semantic_interface_paths.values()) + \
+            list(spec_index.provider_paths.values())
         for package_name, package_dict in self.spec_file_index.items():
             for spec_type in ['capability_interface', 'semantic_capability_interface', 'capability_provider']:
                 package_dict[spec_type][:] = [path for path in package_dict[spec_type] if path in spec_paths]
